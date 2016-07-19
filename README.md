@@ -1,4 +1,9 @@
 # Usage-data-analysis
+- Analyze.py: data cleaning
+- UserAnalysis.py: data analysis
+- [Daily.py, MultiDays.py](https://github.com/WillCGitHub/OECD-Daily-analysis) 
+- User.py: new data structures for handling the data
+- UserDict.py: creat a user hashmap for easy lookup 
 
 ##2 New Data Structure
 Both data structures are in User.py
@@ -36,8 +41,10 @@ visit_frequency = user1.sort_visit()  #return a sorted list (with frequency)
 ```
 ###TimeCell
 This data struecture is for time series analysis
+
 Sample time expression "19-JUL-16 12.00.02.888535 AM" 
-To easily handle this expression, I use TimeCell. It automatically decopose the expression and make it hashable. 
+
+Use TimeCell to easily handle this expression. It automatically decoposes the expression and make it hashable. 
 
 ```python
 t_expr = "19-JUL-16 12.00.02.888535 AM"
@@ -55,11 +62,13 @@ t.check_identity()
 >>>(16, 7, 19, 0, 0, 2) #year,month,day,hour,minute,second
 
 """
-TimeCell is hashable but it's based on same day
+TimeCell is hashable but it's based on day range instead of accurate time point.
 """
-visit_time_list = [a,b,c,d,e,f,g] # a list of TimeCell objects 
-#a,b,c are from July 18 but different hours, e,f,g from July 19 but different hours
 from collections import Counter
+
+visit_time_list = [a,b,c,d,e,f,g] # a list of TimeCell objects 
+#a,b,c are from July 18 but different hours, e,f,g are from July 19 but different hours
+
 Counter(visit_time_list)
 >>> Counter({7/18/16: 3, 7/19/16: 3})
 ```
