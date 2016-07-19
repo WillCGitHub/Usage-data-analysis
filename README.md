@@ -4,8 +4,25 @@
 - [Daily.py, MultiDays.py](https://github.com/WillCGitHub/OECD-Daily-analysis) 
 - User.py: new data structures for handling the data
 - UserDict.py: creat a user hashmap for easy lookup 
+- Main.py: manage all above
 
-##2 New Data Structure
+##Sample Usage
+```terminal
+>>> python3 Main.py
+```
+The program will ask you whether you'd like to update the user database. Enter y to update. 
+
+UserAnalysis.py
+```python
+ua = UserAnalysis(user1) #user1 is a User object, see below to check out User() class
+ua.visit_freq  #returns a sorted list that show how frequent the user visits
+if len(ua.visit_freq) > 3:  #only check users who visit the site at least in 3 different days
+  mm = ua.moving_means() 
+  cmm = ua.centered_moving_means()
+  ise = ua.ISE()
+  ave_v = ua.average_visit() #average visit per day
+```
+##2 New Data Structures
 Both data structures are in User.py
 ###User
 Each user has several attributes
