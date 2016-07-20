@@ -9,7 +9,7 @@ class User():
 		self.session_id = []
 		self.user_agent = []
 		self.items = []
-		self.source = None
+		self.source = []
 		self.event_time = [] #len(event_time) is how many times the user has visited 
 
 	def __str__(self):
@@ -17,11 +17,24 @@ class User():
 	def __repr__(self):
 		return self.identity_id
 
+	def add_session_id(self,session_id):
+		if session_id not in set(self.session_id):
+			self.session_id.append(session_id)
+
+	def add_user_agent(self,user_agent):
+		if user_agent not in set(self.user_agent):
+			self.user_agent.append(user_agent)
+
 	def add_visit(self,t_exp):
 		self.event_time.append(TimeCell(t_exp))
 
 	def add_item(self,items):
 		self.items.append((items[0],TimeCell(items[1])))
+
+	def add_source(self,s):
+		self.source.append(s)
+
+
 
 
 	def duplicate_removal(self):
