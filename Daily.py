@@ -21,8 +21,15 @@ class Daily():
 		total_ip_add = self.ip_add + other.ip_add
 		total_item_id = self.item_id + other.item_id
 		total_source = self.source + other.source
+		total_user_agent = self.user_agent + other.user_agent
 		Days_counter = self.Days_counter + other.Days_counter
-		return MultiDays(total_identityid,total_time,total_sessionid,total_ip_add,total_item_id, total_source, Days_counter)
+		return MultiDays(total_identityid,total_time,
+							total_sessionid,
+							total_ip_add,
+							total_item_id,
+							total_source,
+							total_user_agent,
+							Days_counter)
 
 
 	def convert(self):
@@ -32,6 +39,7 @@ class Daily():
 		self.ip_add = []
 		self.item_id = [] 
 		self.source = []
+		self.user_agent = []
 
 		with open(self.path,newline='',encoding='utf-8') as csvfile:
 			reader = csv.reader(csvfile,delimiter=',')
@@ -61,6 +69,10 @@ class Daily():
 					self.source.append(row[9])
 				except:
 					pass
+				try:
+					self.user_agent.append(row[5])
+				except:
+					pass
 		
 		#get rid of the labels
 		self.time.pop(0)
@@ -69,6 +81,7 @@ class Daily():
 		self.ip_add.pop(0)
 		self.item_id.pop(0)
 		self.source.pop(0)
+		self.user_agent.pop(0)
 
 		#Split time experssion. 
 		self.day = []

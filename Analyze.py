@@ -6,10 +6,32 @@ Daily object or MultiDays object
 from collections import Counter
 import requests
 
-class Analyze(object):
+class Analyze():
 	"""docstring for Analyze"""
 	def __init__(self, dataPackage):
 		self.dataPackage = dataPackage
+
+	def __repr__(self):
+		return "<Analyze object>"
+
+	"""ALL INFORMATION INCLUDED """
+	def user_details(self):
+		user_dict = dict()
+		for idx, user_id in enumerate(self.dataPackage.identityid):
+			if user_id != 'guest':
+				temp_info_pack = [self.dataPackage.time[idx],
+									self.dataPackage.sessionid[idx],
+									self.dataPackage.ip_add[idx],
+									self.dataPackage.item_id[idx],
+									self.dataPackage.source[idx],
+									self.dataPackage.user_agent[idx]]
+				if user_dict.get(user_id) is None:
+					user_dict[user_id] = [temp_info_pack]
+				else:
+					user_dict.get(user_id).append(temp_info_pack)
+		return user_dict
+
+	"""Functions below are optional"""
 
 	"""Return a dictionary that link between IP and 
 		identity id {"IP":"identity id"} """
@@ -139,14 +161,7 @@ class Analyze(object):
 		for i in item_list:
 			print("Content: {} | Download volume: {} \n".format(i[0],i[1]))
 		print("\n\n\n")
-
-	#print out the detail information
-	def classify(self):
-		identityDict = self.identity()
-		#print("Top {} most frequently visited IPs".format(len(self.most_frequent)))
-		self.registered_user = [ip for ip in self.most_frequent if identityDict.get(ip[0])[0] != 'guest']
-		self.unregistered_user =[ip for ip in self.most_frequent if identityDict.get(ip[0])[0] == 'guest']
-		
+	
 
 	def GeoIP(self,IP):
 		result = requests.get('http://ipinfo.io/{}'.format(IP)).json()
@@ -171,59 +186,7 @@ class Analyze(object):
 
 		return result
 
-	def print_registered_user(self, num_of_result):
-		itemDict = self.item()
-		sessionDict = self.session()
-		identityDict = self.identity()
-		num = 1
-		print("Registered user\n")
-		for ip in self.registered_user:
-			print("#{} ".format(num))
-			print("IP: {} visited the sites {} times. ".format(ip[0],ip[1]))
-			print("IP details:")
-			try:
-				r = self.GeoIP(ip[0])
-			except:
-				print("Unable to load geographical information...")
-				print("Try to access the information through a browser manually...")
-				print("http://ipinfo.io/{}".format(ip[0]))
-			print("Identity ID: {}".format(identityDict.get(ip[0])[0]))
-			print("This IP address downloaded {} contents".format(len(itemDict.get(ip[0]))))
-			#print(itemDict.get(ip[0]))
-			print("Number of session ID: {}".format(len(sessionDict.get(ip[0]))))
-			#print out for details
-			#print("Session ID: ... ")#.format(sessionDict.get(ip[0])))
-			print("\n \n \n")
-			if num == num_of_result:
-				break
-			num+=1
 
-	def print_unregistered_user(self, num_of_result):
-		itemDict = self.item()
-		sessionDict = self.session()
-		identityDict = self.identity()
-		num = 1
-		print("Unregistered user\n")
-		for ip in self.unregistered_user:
-			print("#{} ".format(num))
-			print("IP: {} visited the sites {} times. ".format(ip[0],ip[1]))
-			print("IP details:")
-			try:
-				r = self.GeoIP(ip[0])
-			except:
-				print("Unable to load geographical information...")
-				print("Try to access the information through a browser manually...")
-				print("http://ipinfo.io/{}".format(ip[0]))
-			print("Identity ID: {}".format(identityDict.get(ip[0])[0]))
-			print("This IP address downloaded {} contents".format(len(itemDict.get(ip[0]))))
-			#print(itemDict.get(ip[0]))
-			print("Number of session ID: {}".format(len(sessionDict.get(ip[0]))))
-			#print out for details
-			#print("Session ID: ... ")#.format(sessionDict.get(ip[0])))
-			print("\n \n \n")
-			if num == num_of_result:
-				break
-			num+=1
 
 if __name__ =="__main__":
 	pass

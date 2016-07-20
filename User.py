@@ -17,6 +17,10 @@ class User():
 	def __repr__(self):
 		return self.identity_id
 
+	def add_ip(self,IP):
+		if IP not in set(self.ip_add):
+			self.ip_add.append(IP)
+
 	def add_session_id(self,session_id):
 		if session_id not in set(self.session_id):
 			self.session_id.append(session_id)
@@ -29,16 +33,13 @@ class User():
 		self.event_time.append(TimeCell(t_exp))
 
 	def add_item(self,items):
-		self.items.append((items[0],TimeCell(items[1])))
+		if items not in set(self.items):
+			self.items.append(items)
 
 	def add_source(self,s):
 		self.source.append(s)
 
-
-
-
 	def duplicate_removal(self):
-		self.ip_add = list(set(self.ip_add))
 		seen = set()
 		clean_event_time = []
 		for t in self.event_time:
@@ -46,7 +47,6 @@ class User():
 				clean_event_time.append(t)
 				seen.add(t.check_identity())
 		self.event_time = clean_event_time
-		#TO DO item list duplicate removal 
 
 
 
