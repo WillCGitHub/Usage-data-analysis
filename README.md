@@ -15,15 +15,15 @@ optional arguments
     - month
     - 16/7 (year/month)
     - None 
--y pass in a boolean, whether conduct year_analysis or not
+-y pass in a boolean type argument, whether conduct year_analysis or not
 ```
 The program will ask you whether you'd like to update the user database. Enter y to update. 
 
 UserAnalysis.py
 ```python
-#UserAnalysis() class could pass in key word arguments 
 
 """
+UserAnalysis() class could pass in key word arguments 
 optional argument analysis_interval, and it could be customized using the format(Year/month)
 for example, ua = UserAnalysis(user1, analysis_interval = "16/6") this will proceed a month analysis on the data 
 in 2016 june.
@@ -65,10 +65,29 @@ user1.add_visit(t)
 item = ("item id", "19-JUL-16 12.00.02.888535 AM") # item has to be a tuple that keeps id and download time
 user1.add_item(item)
 
+#Add session id
+session_id = "XXXXXX"
+user1.add_session_id(session_id)
+
+#Add user agent
+user_agent = "XXXX"
+user1.add_user_agent(user_agent)
+
+#Add source
+source = "XXXXX"
+user1.add_source(source)
+
 #Duplicate removal
 user1.duplicate_removal() # remove duplicate entries
 
 #sort visit
+"""
+sort_visit() method could pass in key word arguments
+sort_by:
+    -day
+    -month
+    -or a customized argument in the format of (Year/Month), for example 16/6 2016 June
+"""
 visit_frequency = user1.sort_visit()  #return a sorted list (with frequency)
 ```
 ###TimeCell
@@ -93,6 +112,7 @@ Attribute to access:
 t.check_identity()
 >>>(16, 7, 19, 0, 0, 2) #year,month,day,hour,minute,second
 
+t.check_month() #return a year/month string (16/7)
 """
 TimeCell is hashable but it's based on day range instead of accurate time point.
 """
