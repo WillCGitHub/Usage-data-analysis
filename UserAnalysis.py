@@ -102,7 +102,6 @@ class AnalysisFrame():
 		self.analysis_label = analysis_label
 		self.data = data
 	def __repr__(self):
-		#return "".join([self.analysis_label," of ",self.time_label])
 		return "".join([self.analysis_label," of ", self.time_label, ": ", str(self.data)])
 
 		

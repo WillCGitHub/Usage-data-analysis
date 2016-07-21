@@ -4,6 +4,23 @@ from collections import Counter
 from operator import itemgetter
 from UserAnalysis import UserAnalysis
 import csv
+import argparse
+
+ap = argparse.ArgumentParser()
+ap.add_argument("-a", "--analysis_interval", help="analysis_interval")
+ap.add_argument("-y","--year_analysis", help="year_analysis")
+args = ap.parse_args()
+if args.analysis_interval:
+	analysis_interval = args.analysis_interval
+else:
+	analysis_interval = None
+if args.year_analysis:
+	if args.year_analysis == "true" or args.year_analysis == "True":
+		year_analysis = True
+	else:
+		year_analysis = False
+else:
+	year_analysis = False
 
 update = input("Would you like to update user database? (y/n) ")
 if update == 'y':
@@ -17,17 +34,22 @@ def load_obj(name):
 print("Computing...")
 ud = load_obj('user_dict')
 result = []
-for u,d in ud.items():
-	ua = UserAnalysis(d)
-	if len(ua.visit_freq) < 3 :
-		result.append((u,(ua.average_visit(),'visit too few to show result')))
-	else:
-		mm = ua.moving_means()
-		cmm = ua.centered_moving_means()
-		ise = ua.ISE()
-		ave_v = ua.average_visit()
-		percentage = round((ise/ave_v)*100,3)
-		result.append((u,(ave_v,percentage)))
+
+
+
+
+for u, d in ud.items():
+	ua = UserAnalysis(d,analysis_interval = analysis_interval )
+	mm = ua.moving_means()
+	cmm = ua.centered_moving_means()
+	ise = ua.ISE(year_analysis=year_analysis)
+	ave_v = ua.average_visit()
+	if ise is not None:
+		result.append((u,(ave_v,ua.usage_expectation(ise,ave_v))))
+def getkey(item):
+	return item[1][1]
+result = sorted(result, key = getkey)
+
 
 print("Writing result")
 
