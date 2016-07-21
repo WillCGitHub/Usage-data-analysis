@@ -8,7 +8,14 @@
 
 ##Sample Usage
 ```terminal
->>> python3 Main.py
+>>> python3 Main.py -a month -y true
+optional arguments
+-a pass in the arguments of analysis interval
+    possible arguments:
+    - month
+    - 16/7 (year/month)
+    - None 
+-y pass in a boolean, whether conduct year_analysis or not
 ```
 The program will ask you whether you'd like to update the user database. Enter y to update. 
 
@@ -24,13 +31,11 @@ user1 is a User object, see below to check out User() class
 """
 ua = UserAnalysis(user1, analysis_interval = "month")  
 
+ua.moving_means() #return a list of AnalysisFrame object
+ua.centered_moving_means() #return a list of AnalysisFrame object
+us.ISE(year_analysis = False) #year_analysis is an optional argument, boolean type
+ua.average_visit() #return a float number 
 
-ua.visit_freq  #returns a sorted list that show how frequent the user visits
-if len(ua.visit_freq) > 3:  #only check users who visit the site at least in 3 different days
-  mm = ua.moving_means() 
-  cmm = ua.centered_moving_means()
-  ise = ua.ISE()
-  ave_v = ua.average_visit() #average visit per day
 ```
 ##3 New Data Structures
 User.py includes User() and TimeCell(), UserAnalysis.py includes AnalysisFrame()
