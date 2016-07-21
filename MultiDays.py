@@ -4,13 +4,15 @@ Store multiple Daily class
 """
 class MultiDays(object):
 	"""MultiDays"""
-	def __init__(self, identityid,time,sessionid,ip_add,item_id,source,Days_counter):
+	def __init__(self, identityid,time,sessionid,ip_add,
+					item_id,source,user_agent,Days_counter):
 		self.identityid = identityid
 		self.time = time
 		self.sessionid = sessionid
 		self.ip_add = ip_add
 		self.item_id = item_id
 		self.source = source
+		self.user_agent = user_agent
 		self.Days_counter = Days_counter
 		self.interval = "{} -- {} ".format(self.Days_counter,self.time[0],self.time[-1])
 	def __str__(self):
@@ -24,7 +26,15 @@ class MultiDays(object):
 		total_ip_add = self.ip_add + other.ip_add
 		total_item_id = self.item_id + other.item_id
 		total_source = self.source + other.source
+		total_user_agent = self.user_agent + other.user_agent
 		self.Days_counter +=1
-		return MultiDays(total_identityid,total_time,total_sessionid,total_ip_add,total_item_id, total_source,self.Days_counter)
+		return MultiDays(total_identityid,
+							total_time,
+							total_sessionid,
+							total_ip_add,
+							total_item_id,
+							total_source,
+							total_user_agent,
+							self.Days_counter)
 
 		

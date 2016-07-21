@@ -57,7 +57,7 @@ class User():
 		sort_visit(sort_by = "year")
 		Or user customized sort
 		sort_visit(sort_by = "16/7") 
-		use the formmat Year / Month
+		use the formmat Year/Month
 		"""
 		if sort_by == "day":
 			c = Counter(self.event_time)
@@ -73,7 +73,7 @@ class User():
 			month_visit_list = []
 			for visit in self.event_time:
 				if visit.check_month() == sort_by:
-					month_visit_list.append(visit.check_month())
+					month_visit_list.append(visit)
 			c = Counter(month_visit_list)
 			return sorted(c.items(),key=itemgetter(0))
 
@@ -93,7 +93,7 @@ class TimeCell():
 		self.second = int(split_exp[5])
 
 	def __repr__(self):
-		return "{}/{}/{}".format(self.month,self.day,self.year) #MM#DD#YYYY
+		return "{}/{}/{}".format(self.year,self.month,self.day,) #YYYY#MM#DD
 
 	def _key(self):
 		return (self.year,self.month,self.day)
