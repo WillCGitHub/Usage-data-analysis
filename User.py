@@ -50,9 +50,34 @@ class User():
 
 
 
-	def sort_visit(self):
-		c = Counter(self.event_time)
-		return sorted(c.items(),key=itemgetter(0))
+	def sort_visit(self,sort_by = "day", **kwarg):
+		"""
+		Deafult sort by day interval
+		sort_visit(sort_by = "month")
+		sort_visit(sort_by = "year")
+		Or user customized sort
+		sort_visit(sort_by = "16/7") 
+		use the formmat Year / Month
+		"""
+		if sort_by == "day":
+			c = Counter(self.event_time)
+			return sorted(c.items(),key=itemgetter(0))
+		elif sort_by == "month":
+			month_visit_list = []
+			for visit in self.event_time:
+				month_visit_list.append(visit.check_month())
+			c = Counter(month_visit_list)
+			return sorted(c.items(),key=itemgetter(0))
+		else:
+			"""Customized sort"""
+			month_visit_list = []
+			for visit in self.event_time:
+				if visit.check_month() == sort_by:
+					month_visit_list.append(visit.check_month())
+			c = Counter(month_visit_list)
+			return sorted(c.items(),key=itemgetter(0))
+
+
 
 
 """TimeCell data structure	"""
@@ -87,6 +112,31 @@ class TimeCell():
 
 	def check_identity(self):
 		return (self.year,self.month,self.day,self.hour,self.minute,self.second)
+
+	def check_month(self):
+		return "".join([str(self.year), "/",str(self.month)])
+
+	def check_for_range(self,target, year = None, month = None, **kwarg):
+		"""
+		a = TimeCell(" time experssion here ")
+		check_for_range(a, year = 16, month = 7)
+		return boolean
+		"""
+		if year is not None:
+			if target.year == year:
+				if month is not None:
+					if target.month == month:
+						return True
+					else:
+						return False
+				else:
+					return True
+			else:
+				return False
+		else:
+			return False
+
+
 
 
 	def split_time_exp(self,time_exp):
