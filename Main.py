@@ -55,7 +55,14 @@ print("Writing result")
 
 with open ('result/analysis.csv','w') as f:
 	writer = csv.writer(f,delimiter=',')
-	writer.writerow(['Registered user id','average visit per day','expecation'])
+	if analysis_interval == "month":
+		time_interval = "per month"
+	else:
+		if year_analysis is True:
+			time_interval = "per month"
+		elif year_analysis is False:
+			time_interval = "per day"
+	writer.writerow(['Registered user id','average visit {}'.format(time_interval),'expecation'])
 	for r in result:
 		try:
 			writer.writerow([r[0],'{0:.1f}'.format(float(r[1][0])),'{0:.3f}%'.format(float(r[1][1]))])
