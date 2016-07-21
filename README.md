@@ -14,7 +14,17 @@ The program will ask you whether you'd like to update the user database. Enter y
 
 UserAnalysis.py
 ```python
-ua = UserAnalysis(user1) #user1 is a User object, see below to check out User() class
+#UserAnalysis() class could pass in key word arguments 
+
+"""
+optional argument analysis_interval, and it could be customized using the format(Year/month)
+for example, ua = UserAnalysis(user1, analysis_interval = "16/6") this will proceed a month analysis on the data 
+in 2016 june.
+user1 is a User object, see below to check out User() class
+"""
+ua = UserAnalysis(user1, analysis_interval = "month")  
+
+
 ua.visit_freq  #returns a sorted list that show how frequent the user visits
 if len(ua.visit_freq) > 3:  #only check users who visit the site at least in 3 different days
   mm = ua.moving_means() 
@@ -22,8 +32,8 @@ if len(ua.visit_freq) > 3:  #only check users who visit the site at least in 3 d
   ise = ua.ISE()
   ave_v = ua.average_visit() #average visit per day
 ```
-##2 New Data Structures
-Both data structures are in User.py
+##3 New Data Structures
+User.py includes User() and TimeCell(), UserAnalysis.py includes AnalysisFrame()
 ###User
 Each user has several attributes
 - Identity ID
@@ -88,4 +98,12 @@ visit_time_list = [a,b,c,d,e,f,g] # a list of TimeCell objects
 
 Counter(visit_time_list)
 >>> Counter({7/18/16: 3, 7/19/16: 3})
+```
+###AnalysisFrame
+AnalysisFrame class holds the data with labels, analysis type and the data.Much easier to classify and analyze data
+
+```python
+#User needs to pass in 3 arguments(time_label, analysis_label, data)
+#time_label could be TimeCell type
+data = AnalysisFrame("16/7/21", "time series analysis", "0.05")
 ```
