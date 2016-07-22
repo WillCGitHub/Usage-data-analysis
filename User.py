@@ -1,9 +1,25 @@
 """User data strucutre"""
 from collections import Counter
 from operator import itemgetter
+import requests
 
 class User():
 	def __init__(self,identity_id):
+		"""
+		User category:
+		0 - University 
+		1 - Gov
+		2 - Private industry
+		3 - Media
+		4 - Think tank
+		5 - Library
+		6 - Bank
+		7 - International Organization
+		8 - Unkown
+		"""
+		self.user_name = None
+		self.email = None
+		self.CU_number = None
 		self.identity_id = identity_id
 		self.ip_add = []
 		self.session_id = []
@@ -11,6 +27,11 @@ class User():
 		self.items = []
 		self.source = []
 		self.event_time = [] #len(event_time) is how many times the user has visited 
+		if ip_add is not None:
+			self.geo = self.geo_info()
+		else:
+			self.geo = None
+		self.category = None
 
 	def __str__(self):
 		return "<User Object>"
@@ -76,6 +97,11 @@ class User():
 					month_visit_list.append(visit)
 			c = Counter(month_visit_list)
 			return sorted(c.items(),key=itemgetter(0))
+
+	def geo_info(self):
+		IP = ip_add[0]
+		result = requests.get('http://ipinfo.io/{}'.format(IP)).json()
+		return result.get('country')
 
 
 
