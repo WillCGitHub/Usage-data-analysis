@@ -6,6 +6,7 @@ import copy
 import sys
 import csv
 import string
+from collections import Counter
 
 
 
@@ -24,7 +25,8 @@ def classify_category(name):
 					"universite","academy", "univ", "université", "universität",
 					"universiti","universita","studi","studies","institut",
 					"universitäts","universitaet","Üniversitesi","Institutt",
-					"Universiteit","institute","Universitesi","Universities"]
+					"Universiteit","institute","Universitesi","Universities",
+					"Universitat","universitet"]
 	gov = ["administration","government","ministry","federal","association",
 			"public","national"]
 	think_tank = ["accenture"]
@@ -37,8 +39,10 @@ def classify_category(name):
 				"library"]
 	private_industry = ["ltd", "inc","consortium","corporation", "co"]
 	media = ["new york times"]
-	bank = ["bank","banco"]
+	bank = ["bank","banco", "bnp paribas","morgan stanley"]
 	int_org = ["un", "oecd", "int", "international","unicef"]
+	consulting_company = ["ernst", "kpmg","bain and company",
+							"mckinsey & company inc","deloitte"]
 	for u in university:
 		classify_dict[u.lower()] = 0
 	for g in gov:
@@ -55,23 +59,50 @@ def classify_category(name):
 		classify_dict[b] = 6
 	for io in int_org:
 		classify_dict[io] = 7
+	for cc in consulting_company:
+		classify_dict[cc] = 8
 
 	t = dict()
 	for p in string.punctuation:
 		t[p] = " "
+	#translate punctuation to space
 	table = str.maketrans(t)
 	name = name.translate(table)
-	r = classify_dict.get(name)
-	for n in reversed(name.split(" ")):
-		if r is not None:
-			break
-		r = classify_dict.get(n)
-		
+	r = classify_dict.get(name.lower())
 
-	if r is None:
-		return 8
-	else:
+	if r is not None:
 		return r
+
+	average_result = []
+
+	for n in reversed(name.split(" ")):
+		temp = classify_dict.get(n)
+		if temp == 0:
+			return temp
+		if temp is not None:
+			average_result.append(temp)
+
+	if len(average_result) > 0:
+		if len(average_result) == 1:
+			return average_result[0]
+		c = Counter(average_result).most_common(10)
+
+		if len(c) ==1:
+			return c[0][0]
+		elif len(c) > 1:
+			if c[0][1] != c[1][0]:
+				return c[0][0]
+			else:
+				return average_result[0]
+
+	else:
+		return 9
+
+
+
+
+
+
 
 print("load db")
 ud = load_obj('user_dict')
@@ -96,6 +127,7 @@ for idx, row in enumerate(ws.rows):
 	print("Loading {0:.1f}% ... \r".format((idx/(ws.max_row-1))*100), end="")
 	sys.stdout.flush()
 
+print("\n")
 r = []
 for u, d in ud.items():
 	d.user_name = id_info.get(u)[0]

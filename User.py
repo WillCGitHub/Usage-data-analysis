@@ -15,7 +15,8 @@ class User():
 		5 - Library
 		6 - Bank
 		7 - International Organization
-		8 - Unkown
+		8 - Consulting company
+		9 - Unkown
 		"""
 		self.user_name = None
 		self.email = None
@@ -27,10 +28,11 @@ class User():
 		self.items = []
 		self.source = []
 		self.event_time = [] #len(event_time) is how many times the user has visited 
-		if ip_add is not None:
+		"""if self.ip_add is not None:
 			self.geo = self.geo_info()
 		else:
-			self.geo = None
+			self.geo = None"""
+		self.geo = None
 		self.category = None
 
 	def __str__(self):
@@ -99,7 +101,7 @@ class User():
 			return sorted(c.items(),key=itemgetter(0))
 
 	def geo_info(self):
-		IP = ip_add[0]
+		IP = self.ip_add[0]
 		result = requests.get('http://ipinfo.io/{}'.format(IP)).json()
 		return result.get('country')
 
