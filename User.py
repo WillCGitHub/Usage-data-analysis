@@ -1,16 +1,35 @@
 """User data strucutre"""
 from collections import Counter
 from operator import itemgetter
+import requests
+import sys
 
 class User():
 	def __init__(self,identity_id):
-		self.identity_id = identity_id
-		self.ip_add = []
-		self.session_id = []
-		self.user_agent = []
-		self.items = []
-		self.source = []
-		self.event_time = [] #len(event_time) is how many times the user has visited 
+		"""
+		User category:
+		0 - University 
+		1 - Gov
+		2 - Private industry
+		3 - Media
+		4 - Think tank
+		5 - Library
+		6 - Bank
+		7 - International Organization
+		8 - Consulting company
+		9 - Unkown
+		"""
+		self.identity_dict = dict()
+		self.identity_dict['user_name'] = None
+		self.identity_dict['email'] = None
+		self.identity_dict['CU_number'] = None
+		self.identity_dict['identity_id'] = identity_id
+		self.identity_dict['ip_add'] = []
+		self.identity_dict['items'] = []
+		self.identity_dict['source'] = []
+		self.identity_dict['event_time'] = []
+		self.identity_dict['geo'] = None
+		self.identity_dict['category'] = None
 
 	def __str__(self):
 		return "<User Object>"
@@ -18,36 +37,19 @@ class User():
 		return self.identity_id
 
 	def add_ip(self,IP):
-		if IP not in set(self.ip_add):
-			self.ip_add.append(IP)
-
-	def add_session_id(self,session_id):
-		if session_id not in set(self.session_id):
-			self.session_id.append(session_id)
-
-	def add_user_agent(self,user_agent):
-		if user_agent not in set(self.user_agent):
-			self.user_agent.append(user_agent)
+		if IP not in set(self.identity_dict['ip_add']):
+			self.identity_dict['ip_add'].append(IP)
 
 	def add_visit(self,t_exp):
-		self.event_time.append(TimeCell(t_exp))
+		self.identity_dict['event_time'].append(TimeCell(t_exp))
+
 
 	def add_item(self,items):
-		if items not in set(self.items):
-			self.items.append(items)
+		if items not in set(self.identity_dict['items']):
+			self.identity_dict['items'].append(items)
 
 	def add_source(self,s):
-		self.source.append(s)
-
-	def duplicate_removal(self):
-		seen = set()
-		clean_event_time = []
-		for t in self.event_time:
-			if t.check_identity() not in seen:
-				clean_event_time.append(t)
-				seen.add(t.check_identity())
-		self.event_time = clean_event_time
-
+		self.identity_dict['source'].append(s)
 
 
 	def sort_visit(self,sort_by = "day", **kwarg):
@@ -59,23 +61,29 @@ class User():
 		sort_visit(sort_by = "16/7") 
 		use the formmat Year/Month
 		"""
+		event_time = self.identity_dict.get('event_time')
 		if sort_by == "day":
-			c = Counter(self.event_time)
+			c = Counter(event_time)
 			return sorted(c.items(),key=itemgetter(0))
 		elif sort_by == "month":
 			month_visit_list = []
-			for visit in self.event_time:
+			for visit in event_time:
 				month_visit_list.append(visit.check_month())
 			c = Counter(month_visit_list)
 			return sorted(c.items(),key=itemgetter(0))
 		else:
 			"""Customized sort"""
 			month_visit_list = []
-			for visit in self.event_time:
+			for visit in event_time:
 				if visit.check_month() == sort_by:
 					month_visit_list.append(visit)
 			c = Counter(month_visit_list)
 			return sorted(c.items(),key=itemgetter(0))
+
+	def geo_info(self):
+		IP = self.ip_add[0]
+		result = requests.get('http://ipinfo.io/{}'.format(IP)).json()
+		return result.get('country')
 
 
 
@@ -84,13 +92,17 @@ class User():
 
 class TimeCell():
 	def __init__(self,expression):
-		split_exp = self.split_time_exp(expression)
+		try:
+			split_exp = self.split_time_exp(expression)
+		except:
+			print("error expression: {}".format(expression))
 		self.year = int(split_exp[0])
 		self.month = self.convert_month_exp(split_exp[1])
 		self.day = int(split_exp[2])
 		self.hour = int(split_exp[3])
 		self.minute = int(split_exp[4])
 		self.second = int(split_exp[5])
+
 
 	def __repr__(self):
 		return "{}/{}/{}".format(self.year,self.month,self.day,) #YYYY#MM#DD
@@ -115,28 +127,6 @@ class TimeCell():
 
 	def check_month(self):
 		return "".join([str(self.year), "/",str(self.month)])
-
-	def check_for_range(self,target, year = None, month = None, **kwarg):
-		"""
-		a = TimeCell(" time experssion here ")
-		check_for_range(a, year = 16, month = 7)
-		return boolean
-		"""
-		if year is not None:
-			if target.year == year:
-				if month is not None:
-					if target.month == month:
-						return True
-					else:
-						return False
-				else:
-					return True
-			else:
-				return False
-		else:
-			return False
-
-
 
 
 	def split_time_exp(self,time_exp):
@@ -190,7 +180,9 @@ class TimeCell():
 
 
 if __name__ == "__main__":
-	pass
+	expre = "01-OCT-15 12.01.09.000000 AM"
+	t = TimeCell(expre)
+	print(t.year)
 
 
 

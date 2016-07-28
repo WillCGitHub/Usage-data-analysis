@@ -1,96 +1,141 @@
 """Create Users' Map"""
 from User import *
 from Daily import Daily
-from Analyze import Analyze 
 import os
 from os import listdir
 from os.path import isfile,join
 import sys
-from functools import reduce
 import pickle
+import gc
+import multiprocessing as mp
+from functools import reduce
+import time
+
+
+class UserDict():
+	def __init__(self, filePath = "dataset"):
+		self.filePath = filePath
+
+	#do not read in hidden files
+	def listdir_nohidden(self,path):
+	    for f in os.listdir(path):
+	        if not f.startswith('.'):
+	            yield f
+
+	def save_obj(self,obj, name):
+	    with open('userdb/'+ name + '.pkl', 'wb') as f:
+	        pickle.dump(obj, f, pickle.HIGHEST_PROTOCOL)
+
+	def load_obj(self,name):
+	    with open('userdb/' + name + '.pkl', 'rb') as f:
+	        return pickle.load(f)
+
+	def pre_process(self):
+		fileList = self.listdir_nohidden(self.filePath)
+		pre_process = [f for f in fileList]
+		return pre_process
+
+	def process_list(self,pre_process_list,q):
+		process_list = []
+		append = process_list.append
+		for idx, file in enumerate(pre_process_list):
+			#get file path name
+			file = join(self.filePath,file)
+			append(Daily(file))
+			print("{0:.1f}%\r ".format(float((idx+1)/len(pre_process_list)*100)),end='')
+			sys.stdout.flush()
+		q.put(process_list)
+		gc.collect()
+
+
+	def _add_attr(self,userObj):
+		userObj.add_visit(event_time[idx])
+		userObj.add_ip(ip_add[idx])
+		userObj.add_item(item_id[idx])
+
+	def _create_user_map(self,daily,user_dict):
+		for idx, user_id in enumerate(daily.identity_dict.get('identity_id')):
+			if user_id != 'guest':
+				event_time = daily.identity_dict.get('time')
+				ip_add = daily.identity_dict.get('ip_add')
+				item_id = daily.identity_dict.get('item_id')
+				try:
+					temp = user_dict[user_id]
+					try:
+						temp.add_visit(event_time[idx])
+						temp.add_ip(ip_add[idx])
+						temp.add_item(item_id[idx])
+					except IndexError:
+						print('Index Error')
+					except:
+						print('Unkown Error')
+				except KeyError:
+					temp = User(user_id)
+					try:
+						temp.add_visit(event_time[idx])
+						temp.add_ip(ip_add[idx])
+						temp.add_item(item_id[idx])
+						user_dict[user_id] = temp
+					except IndexError:
+						print('Index Error')
+					except:
+						print('Unkown Error')
+			
+
+		gc.collect()
+		return user_dict
+
+	def create_user_map(self,daily_list):
+		print("Creating user map")
+		user_dict = dict()
+		for idx, d in enumerate(daily_list):
+			user_dict = self._create_user_map(d,user_dict)
+			print("{0:.1f}% \r".format(float((idx+1)/len(daily_list))*100), end='')
+
+		self.save_obj(user_dict,'user_dict')
 
 
 
 
-#do not read in hidden files
-def listdir_nohidden(path):
-    for f in os.listdir(path):
-        if not f.startswith('.'):
-            yield f
-
-def save_obj(obj, name):
-    with open('userdb/'+ name + '.pkl', 'wb') as f:
-        pickle.dump(obj, f, pickle.HIGHEST_PROTOCOL)
-
-def load_obj(name):
-    with open('userdb/' + name + '.pkl', 'rb') as f:
-        return pickle.load(f)
-
-filePath ="dataset"
-fileList = listdir_nohidden(filePath)
-process_list = []
-pre_process = [f for f in fileList]
-
-print("Updating users data")
-
-for idx, file in enumerate(pre_process):
-	#get file path name
-	file = join(filePath,file)
-	process_list.append(Daily(file))
-	print("{0:.1f}% \r".format(float((idx+1)/len(pre_process)*100)), end='')
-	sys.stdout.flush()
 
 
-multi = reduce(lambda x,y: x+y, process_list)
-print('')
-print(multi)
+	def main(self,num_of_thread):
+		pre_process_list = self.pre_process()
+		q = mp.Queue()
+		daily_list=[]
+		jobs = []
+		jappend = jobs.append
+		for idx in range(0,len(pre_process_list),num_of_thread):
+			task = pre_process_list[idx:idx+num_of_thread]
+			p = mp.Process(target = self.process_list, args = (task,q))
+			p.start()
+			jappend(p)
+		
+		for _ in jobs:
+			daily_list+=q.get()
 
-"""CREATE USER MAP"""
-print("Creating user map")
-an = Analyze(multi)
-full_user_dict = an.user_details()
+		for j in jobs:
+			j.join()
 
-print("Load")
-try:
-	user_dict = load_obj('user_dict')
-except:
-	user_dict = dict()
+		print('')
+		gc.collect()
 
+		
+		self.create_user_map(daily_list)
 
-for idx,(u,info_packs) in enumerate(full_user_dict.items()):
-	if user_dict.get(u) is None:
-		temp = User(u)
-		for infos in info_packs:
-			temp.add_visit(infos[0])
-			temp.add_session_id(infos[1])
-			temp.add_ip(infos[2])
-			temp.add_item(infos[3])
-			temp.add_source(infos[4])
-			temp.add_user_agent(infos[5])
-		user_dict[u] = temp
-	else:
-		temp = user_dict.get(u)
-		for infos in info_packs:
-			temp.add_visit(infos[0])
-			temp.add_session_id(infos[1])
-			temp.add_ip(infos[2])
-			temp.add_item(infos[3])
-			temp.add_source(infos[4])
-			temp.add_user_agent(infos[5])
-	print("{0:.1f}% \r".format(float((idx+1)/len(full_user_dict))*100), end='')
-	sys.stdout.flush()
+		
 
 
-print("clean up")
-for idx, (u,d) in enumerate(user_dict.items()):
-	user_dict.get(u).duplicate_removal()
-	print("{0:.1f}% \r".format(float((idx+1)/len(user_dict))*100), end='')
-	sys.stdout.flush()
+	
 
-print("Save data")
-save_obj(user_dict,'user_dict')
 
-print("Finish updating user database")
+if __name__ == '__main__':
+	start_time = time.time()
+	ud = UserDict("dataset")
+	ud.main(8)
+	gc.collect()
+	print('')
+	print("{0:.5f}s".format(time.time()-start_time))
 
 
 
