@@ -2,7 +2,7 @@
 from collections import Counter
 from operator import itemgetter
 import requests
-import sys
+
 
 class User():
 	def __init__(self,identity_id):
@@ -30,6 +30,7 @@ class User():
 		self.identity_dict['event_time'] = []
 		self.identity_dict['geo'] = None
 		self.identity_dict['category'] = None
+
 
 	def __str__(self):
 		return "<User Object>"
