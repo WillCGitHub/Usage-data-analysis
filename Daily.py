@@ -3,7 +3,6 @@ Convert Daily data set into an object, so the daily data can be accessed easily.
 Useful for weekly, monthly, annually Analysis. 
 """
 
-from MultiDays import MultiDays
 import pandas as pd
 import csv
 

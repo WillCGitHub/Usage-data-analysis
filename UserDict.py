@@ -83,14 +83,27 @@ class UserDict():
 			
 
 		gc.collect()
-		return user_dict
 
 	def create_user_map(self,daily_list):
 		print("Creating user map")
-		user_dict = dict()
+		jobs = []
+		append = jobs.append
+		user_dict = mp.Manager().dict()
+		c = 0
 		for idx, d in enumerate(daily_list):
-			user_dict = self._create_user_map(d,user_dict)
+			p = mp.Process(target = self._create_user_map, args=(d,user_dict,))
+			p.start()
+			append(p)
+			c+=1 
+			if c >= 8 :
+				jobs[0].join()
+				jobs.pop(0)
+				c -=1 
 			print("{0:.1f}% \r".format(float((idx+1)/len(daily_list))*100), end='')
+			sys.stdout.flush()
+
+		for j in jobs:
+			j.join()
 
 		self.save_obj(user_dict,'user_dict')
 
@@ -118,10 +131,12 @@ class UserDict():
 			j.join()
 
 		print('')
+		del jobs
 		gc.collect()
 
-		
+
 		self.create_user_map(daily_list)
+		gc.collect()
 
 		
 

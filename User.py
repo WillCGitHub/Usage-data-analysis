@@ -71,7 +71,7 @@ class User():
 			for visit in event_time:
 				month_visit_list.append(visit.check_month())
 			c = Counter(month_visit_list)
-			return sorted(c.items(),key=itemgetter(0))
+			return sorted(c.items(),key=itemgetter(1))
 		else:
 			"""Customized sort"""
 			month_visit_list = []
@@ -127,7 +127,10 @@ class TimeCell():
 		return (self.year,self.month,self.day,self.hour,self.minute,self.second)
 
 	def check_month(self):
-		return "".join([str(self.year), "/",str(self.month)])
+		if self.month < 10:
+			return "".join([str(self.year), "/0",str(self.month)])
+		else:
+			return "".join([str(self.year), "/",str(self.month)])
 
 
 	def split_time_exp(self,time_exp):
