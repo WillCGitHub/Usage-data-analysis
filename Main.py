@@ -29,6 +29,10 @@ else:
 update = input("Would you like to update user database? (y/n) ")
 if update == 'y':
 	import UserDict
+	ud = UserDict("dataset")
+	ud.main(8)
+	gc.collect()
+	print('')
 """ end """
 
 def load_obj(name):
