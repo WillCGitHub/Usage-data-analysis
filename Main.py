@@ -28,7 +28,7 @@ else:
 """Update userdb """
 update = input("Would you like to update user database? (y/n) ")
 if update == 'y':
-	import UserDict
+	from UserDict import UserDict
 	ud = UserDict("dataset")
 	ud.main(8)
 	gc.collect()
