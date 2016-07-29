@@ -9,6 +9,7 @@
 ##Sample Usage
 ```terminal
 >>> python3 Main.py -a month -y true
+#This command will conduct monthly analysis between different years
 optional arguments
 -a pass in the arguments of analysis interval
     possible arguments:
@@ -17,7 +18,7 @@ optional arguments
     - None 
 -y pass in a boolean type argument, whether conduct year_analysis or not
 ```
-The program will ask you whether you'd like to update the user database. Enter y to update. 
+The program will ask you whether you'd like to update the user database. Enter y and then hit enter to update. 
 
 UserAnalysis.py
 ```python
@@ -32,9 +33,18 @@ user1 is a User object, see below to check out User() class
 ua = UserAnalysis(user1, analysis_interval = "month")  
 
 ua.moving_means() #return a list of AnalysisFrame object
+
 ua.centered_moving_means() #return a list of AnalysisFrame object
-us.ISE(year_analysis = False) #year_analysis is an optional argument, boolean type
-ua.average_visit() #return a float number 
+
+ise_dict = us.ISE(year_analysis = False) #year_analysis is an optional argument, boolean type
+#ise_dict is a dictionary {"time label":<AnalysisFrame Object>}
+
+ave_m_e = ua.average_month_effect(ise_dict)
+#this will return a dictionary {"month":average visit(dtype: float)}
+
+ave_v = ua.average_visit() #average visit per month
+
+u_exp = ua.usage_expectation(ave_m_e,ave_v) #expectation per month
 
 ```
 ##3 New Data Structures
@@ -44,14 +54,24 @@ Each user has several attributes
 - Identity ID
 - IP address
 - Session ID
-- User agent
+- Useragent
 - Items downloaded
 - Visit time
 - Referral source
+- CU_number
+- Geographical infomation
+- Category
+
+
 User class can handle them all easily. 
 ```python
 #instantiate a new User class
 user1 = User('idXXX') 
+
+#all the attributes are holds in a dictionary
+
+#to access
+user1.identity_dict
 
 #Add ip address 
 IP = "192.168.1.1"
@@ -69,16 +89,7 @@ user1.add_item(item)
 session_id = "XXXXXX"
 user1.add_session_id(session_id)
 
-#Add user agent
-user_agent = "XXXX"
-user1.add_user_agent(user_agent)
 
-#Add source
-source = "XXXXX"
-user1.add_source(source)
-
-#Duplicate removal
-user1.duplicate_removal() # remove duplicate entries
 
 #sort visit
 """
