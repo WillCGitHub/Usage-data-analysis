@@ -8,8 +8,8 @@ import sys
 import pickle
 import gc
 import multiprocessing as mp
-from functools import reduce
 import time
+import copy
 
 
 class UserDict():
@@ -48,64 +48,24 @@ class UserDict():
 		gc.collect()
 
 
-	def _add_attr(self,userObj):
-		userObj.add_visit(event_time[idx])
-		userObj.add_ip(ip_add[idx])
-		userObj.add_item(item_id[idx])
-
 	def _create_user_map(self,daily,user_dict):
 		for idx, user_id in enumerate(daily.identity_dict.get('identity_id')):
 			if user_id != 'guest':
 				event_time = daily.identity_dict.get('time')
 				ip_add = daily.identity_dict.get('ip_add')
 				item_id = daily.identity_dict.get('item_id')
+				temp = user_dict[user_id]
 				try:
-					temp = user_dict[user_id]
-					try:
-						temp.add_visit(event_time[idx])
-						temp.add_ip(ip_add[idx])
-						temp.add_item(item_id[idx])
-					except IndexError:
-						print('Index Error')
-					except:
-						print('Unkown Error')
-				except KeyError:
-					temp = User(user_id)
-					try:
-						temp.add_visit(event_time[idx])
-						temp.add_ip(ip_add[idx])
-						temp.add_item(item_id[idx])
-						user_dict[user_id] = temp
-					except IndexError:
-						print('Index Error')
-					except:
-						print('Unkown Error')
-			
+					temp.add_visit(event_time[idx])
+					temp.add_ip(ip_add[idx])
+					temp.add_item(item_id[idx])
+					user_dict[user_id] = temp
+				except IndexError:
+					print('Index Error')
+				except:
+					print('Unkown Error')
 
-		gc.collect()
-
-	def create_user_map(self,daily_list):
-		print("Creating user map")
-		jobs = []
-		append = jobs.append
-		user_dict = mp.Manager().dict()
-		c = 0
-		for idx, d in enumerate(daily_list):
-			p = mp.Process(target = self._create_user_map, args=(d,user_dict,))
-			p.start()
-			append(p)
-			c+=1 
-			if c >= 8 :
-				jobs[0].join()
-				jobs.pop(0)
-				c -=1 
-			print("{0:.1f}% \r".format(float((idx+1)/len(daily_list))*100), end='')
-			sys.stdout.flush()
-
-		for j in jobs:
-			j.join()
-
-		self.save_obj(user_dict,'user_dict')
+		return user_dict
 
 
 

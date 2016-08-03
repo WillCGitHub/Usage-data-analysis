@@ -7,17 +7,20 @@ import requests
 class User():
 	def __init__(self,identity_id):
 		"""
-		User category:
-		0 - University 
-		1 - Gov
-		2 - Private industry
-		3 - Media
-		4 - Think tank
-		5 - Library
-		6 - Bank
-		7 - International Organization
-		8 - Consulting company
-		9 - Unkown
+		100	No Profile
+		101	Trade Partner
+		102	Think Tank
+		103	Consortia
+		104	Industry
+		105	Parliament
+		106	End Client
+		107	Government
+		108	International Organisation
+		109	Library
+		110	Academic
+		111	Dataseller
+		112	NGOs & Civil Soc Org & Trade Uni
+		114	Financial & Legal Services
 		"""
 		self.identity_dict = dict()
 		self.identity_dict['user_name'] = None
