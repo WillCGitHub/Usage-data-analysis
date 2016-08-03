@@ -21,46 +21,11 @@ def save_obj(obj, name):
     with open('userdb/'+ name + '.pkl', 'wb') as f:
         pickle.dump(obj, f, pickle.HIGHEST_PROTOCOL)
 
-def deleteParenthesis(input_text):
-	regEx = re.compile(r'([^\(]*)\([^\)]*\) *(.*)')
-	m = regEx.match(input_text)
-	while m:
-	  input_text = m.group(1) + m.group(2)
-	  m = regEx.match(input_text)
-	return input_text
 
 def listdir_nohidden(path):
 	    for f in os.listdir(path):
 	        if not f.startswith('.'):
 	            yield f
-
-
-
-def feature_extraction(userObj):
-	"""
-	features:
-	[# of items downloaded, # of sources, # of session id, 
-	visit time hour, visit time day, ]
-	"""
-	features = [0,0,0,0,0] 
-
-	features[0] = len(userObj.items)
-
-	features[1] = len(userObj.source)
-
-	features[2] = len(userObj.session_id)
-
-	mean_visit_time= mean([a.hour for a in userObj.event_time])
-	features[3] = mean_visit_time
-
-	mean_visit_day = mean([a.day for a in userObj.event_time])
-	features[4] = mean_visit_day
-
-
-
-
-
-	return features
 
 
 def user_agent_parse_dict():
@@ -176,13 +141,14 @@ def export_feature():
 							if (uid != 'guest') and profileC is not None:
 								ua_info = parse_user_agent(row[6])
 								output_f = open ('result/cleaned_data.csv','a')
-								csv.writer(output_f,delimiter=',').writerow([profileC, 
-																				unique_ip_dict.get(row[5]),
-																				item_cate_dict.get(row[7].split('-')[0]),
-																				browser_dict.get(ua_info[0]),
-																				os_dict.get(ua_info[1]),
-																				source_dict.get(row[10]),
-																				licence_type_dict.get(row[9])])
+								writer = csv.writer(output_f,delimiter=',')
+								writer.writerow([profileC, 
+												unique_ip_dict.get(row[5]),
+												item_cate_dict.get(row[7].split('-')[0]),
+												browser_dict.get(ua_info[0]),
+												os_dict.get(ua_info[1]),
+												source_dict.get(row[10]),
+												licence_type_dict.get(row[9])])
 								output_f.close()
 		except:
 			pass
@@ -192,9 +158,6 @@ def export_feature():
 		sys.stdout.flush()
 	
 	output_f.close()
-
-
-
 
 
 if __name__ == '__main__':

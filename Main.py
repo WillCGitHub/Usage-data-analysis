@@ -16,23 +16,19 @@ args = ap.parse_args()
 if args.analysis_interval:
 	analysis_interval = args.analysis_interval
 else:
-	analysis_interval = None
+	analysis_interval = 'month'
 if args.year_analysis:
 	if args.year_analysis == "true" or args.year_analysis == "True":
 		year_analysis = True
-	else:
+	elif args.year_analysis == "false" or args.year_analysis == "False":
 		year_analysis = False
 else:
-	year_analysis = False
+	year_analysis = True
 
 """Update userdb """
 update = input("Would you like to update user database? (y/n) ")
 if update == 'y':
-	from UserDict import UserDict
-	ud = UserDict("dataset")
-	ud.main(8)
-	gc.collect()
-	print('')
+	import DataManagement
 """ end """
 
 def load_obj(name):
@@ -141,44 +137,6 @@ for j in jobs:
 	j.join()
 
 f.close()
-
-"""
-print("Writing result")
-
-
-with open ('result/analysis.csv','w') as f:
-	writer = csv.writer(f,delimiter=',')
-	if analysis_interval == "month":
-		time_interval = "per month"
-	else:
-		if year_analysis is True:
-			time_interval = "monthly"
-		elif year_analysis is False:
-			time_interval = "daily"
-	writer.writerow(['Registered user id',
-						'{} average visit'.format(time_interval),
-						'JAN','FEB','MAR','APR',
-						'MAY','JUN','JUL','AUG',
-						'SEP','OCT','NOV','DEC'])
-	for u,r in result.items():
-		try:
-			writer.writerow([u,'{0:.1f}'.format(float(r[0])),
-							'{0:.3f}'.format(float(r[1][0])),
-							'{0:.3f}'.format(float(r[1][1])),
-							'{0:.3f}'.format(float(r[1][2])),
-							'{0:.3f}'.format(float(r[1][3])),
-							'{0:.3f}'.format(float(r[1][4])),
-							'{0:.3f}'.format(float(r[1][5])),
-							'{0:.3f}'.format(float(r[1][6])),
-							'{0:.3f}'.format(float(r[1][7])),
-							'{0:.3f}'.format(float(r[1][8])),
-							'{0:.3f}'.format(float(r[1][9])),
-							'{0:.3f}'.format(float(r[1][10])),
-							'{0:.3f}'.format(float(r[1][11])),])
-		except:
-			pass
-
-"""
 
 
 
