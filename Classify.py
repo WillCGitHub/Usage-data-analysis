@@ -8,6 +8,7 @@ import csv
 import string
 from collections import Counter
 import pandas as pd
+from CategoryDict import category_dict
 
 
 
@@ -19,20 +20,6 @@ def save_obj(obj, name):
     with open('userdb/'+ name + '.pkl', 'wb') as f:
         pickle.dump(obj, f, pickle.HIGHEST_PROTOCOL)
 
-category_dict = {'100':'No Profile',
-					'101':'Trade Partner',
-					'102':'Think Tank',
-					'103':'Consortia',
-					'104':'Industry',
-					'105':'Parliament',
-					'106':'End Client',
-					'107':'Government',
-					'108':'International Organisation',
-					'109':'Library',
-					'110':'Academic',
-					'111':'Dataseller',
-					'112':'NGOs & Civil Soc Org & Trade Uni',
-					'114':'Financial & Legal Services'}
 cu_profile = 'TurpinFiles/xpslite_customer_profile.csv'
 df = pd.read_csv(cu_profile,header = 0,dtype = str)
 cu_profile_code_dict = dict()
