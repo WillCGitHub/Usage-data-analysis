@@ -1,10 +1,15 @@
 # Usage-data-analysis
-- Analyze.py: data cleaning
-- UserAnalysis.py: data analysis
-- [Daily.py, MultiDays.py](https://github.com/WillCGitHub/OECD-Daily-analysis) 
+
+- CategoryDict.py : Profile code dictionary
+- Classify.py : Classify registered users
+- ClassifyGuest : Use KNN to Classify guest users
+- DataManagement.py : automaticaly update data
+- FeatureExtraction.py : Extract features from strings
+- Main.py: Conducting yearly analysis
 - User.py: new data structures for handling the data
-- UserDict.py: creat a user hashmap for easy lookup 
-- Main.py: manage all above
+- UserAnalysis.py: data analysis
+- UserProfile.py : link registered ID with CU_number
+
 
 ##Sample Usage
 ```terminal
@@ -19,6 +24,17 @@ optional arguments
 -y pass in a boolean type argument, whether conduct year_analysis or not
 ```
 The program will ask you whether you'd like to update the user database. Enter y and then hit enter to update. 
+
+
+ClassifyGuest Class
+```python
+from ClassifyGuest import ClassifyGuest
+daily_file_path = "XXX/XXX.csv"
+gc = ClassifyGuest(daily_file_path)
+gc.train()
+gc.predict()#automaticaly produce result.csv 
+```
+
 
 UserAnalysis.py
 ```python
