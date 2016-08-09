@@ -38,7 +38,7 @@ class User():
 	def __str__(self):
 		return "<User Object>"
 	def __repr__(self):
-		return self.identity_id
+		return self.identity_dict['identity_id']
 
 	def add_ip(self,IP):
 		if IP not in set(self.identity_dict['ip_add']):
