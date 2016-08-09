@@ -1,14 +1,40 @@
 # Usage-data-analysis
 
+######Note:
+```
+These scripts are built and work under Python3.5 MacOSX/Linux. Some of the scripts use the moldel 
+Multiprocessing which does not support Windows. 
+To use this scripts, Anaconda is probably the best option because of the scripts' dependency on 
+many other packages and Anaconda includes all of them. 
+
+All used pakages are listed here:
+- Numpy
+- Scipy
+- Pandans
+- User
+- openpyxl
+- ua_parser
+- requests
+```
+
+Main.py and ClassifyGuest.py are two top level scripts,
+which calls on other scripts to conduct analysis.
+
 - CategoryDict.py : Profile code dictionary
 - Classify.py : Classify registered users
-- ClassifyGuest : Use KNN to Classify guest users
+- ClassifyGuest.py : Use KNN to Classify guest users
 - DataManagement.py : automaticaly update data
 - FeatureExtraction.py : Extract features from strings
 - Main.py: Conducting yearly analysis
 - User.py: new data structures for handling the data
 - UserAnalysis.py: data analysis
 - UserProfile.py : link registered ID with CU_number
+
+######Note:
+Main.py needs the following:
+- dataset: Daily data
+- result: A folder contains results
+- userdb: A folder contains pkl files
 
 
 ##Sample Usage
